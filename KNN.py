@@ -23,7 +23,41 @@ def classify(x, y, dataset, k=3):
     2. Sort distances and pick the k nearest neighbors
     3. Return the most common label among those neighbors
     """
-    pass
+    distances = []  # List to store (distance, label)
+
+    # 1. Calculate distances to all points
+    for point in dataset:
+        dx = point[0] - x
+        dy = point[1] - y
+        dist = math.sqrt(dx * dx + dy * dy)  # Euclidean distance
+        label = int(point[2])  # Class label (0 or 1)
+        distances.append((dist, label))
+
+    # 2. Sort by distance
+    distances.sort(key=lambda t: t[0])
+
+    # 3. Count labels of k nearest neighbors
+    count0 = 0
+    count1 = 0
+    for i in range(k):
+        if distances[i][1] == 0:
+            count0 += 1
+        else:
+            count1 += 1
+
+    # 4. Return the label with more votes
+    if count0 > count1:
+        return 0
+    else:
+        return 1
+
+# === Teacher's Standard Answer ===
+def classify_solution(x, y, dataset, k=3):
+    distances = np.sqrt((dataset[:, 0] - x) ** 2 + (dataset[:, 1] - y) ** 2)
+    nearest_indices = np.argsort(distances)[:k]
+    nearest_labels = dataset[nearest_indices, 2]
+    counts = np.bincount(nearest_labels.astype(int))
+    return np.argmax(counts)
 
 # Draw decision boundary using *student's classify()*
 def plot_decision_boundary(ax, dataset, k):
